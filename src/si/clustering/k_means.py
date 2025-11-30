@@ -6,6 +6,7 @@ from si.base.model import Model
 from si.base.transformer import Transformer
 from si.data.dataset import Dataset
 from si.statistics.euclidean_distance import euclidean_distance
+from si.statistics.tanimoto import tanimoto_similarity #for exercice 4 tanimoto_similarity
 
 
 class KMeans(Transformer, Model):
@@ -30,7 +31,7 @@ class KMeans(Transformer, Model):
     labels: np.array
         Labels of the clusters.
     """
-
+    # def __init__(self, k: int, max_iter: int = 1000, distance: Callable = tanimoto_similarity, **kwargs):
     def __init__(self, k: int, max_iter: int = 1000, distance: Callable = euclidean_distance, **kwargs):
         """
         K-means clustering algorithm.
@@ -54,7 +55,7 @@ class KMeans(Transformer, Model):
         self.centroids = None
         self.labels = None
 
-    def _init_centroids(self, dataset: Dataset):
+    def _init_centroids(self, dataset: Dataset): #ponto 1 
         """
         It generates initial k centroids.
 
@@ -63,10 +64,10 @@ class KMeans(Transformer, Model):
         dataset: Dataset
             Dataset object.
         """
-        seeds = np.random.permutation(dataset.shape()[0])[:self.k]
+        seeds = np.random.permutation(dataset.shape()[0])[:self.k] #selects at random an initial centroid
         self.centroids = dataset.X[seeds]
 
-    def _get_closest_centroid(self, sample: np.ndarray) -> np.ndarray:
+    def _get_closest_centroid(self, sample: np.ndarray) -> np.ndarray: #ponto 2
         """
         Get the closest centroid to each data point.
 
