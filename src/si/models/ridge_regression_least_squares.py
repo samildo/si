@@ -2,6 +2,7 @@ import numpy as np
 from si.base.model import Model
 from si.data.dataset import Dataset
 from typing import Optional
+from si.metrics.mse import mse
 
 class RidgeRegressionLeastSquares(Model):
     """
@@ -48,18 +49,19 @@ class RidgeRegressionLeastSquares(Model):
             X = (X - self.mean) / self.std
 
         # Step 2: Add intercept term to X
-        X = np.c_[np.ones(X.shape[0]), X]
+        X = np.c_[np.ones(X.shape[0]), X] #adds a columof ones to our matrix 
 
         # Step 3: Compute the penalty matrix
-        penalty_matrix = self.l2_penalty * np.eye(X.shape[1])
+        penalty_matrix = self.l2_penalty * np.eye(X.shape[1]) #np.eye is the identity matrix for the shape of X 
         penalty_matrix[0, 0] = 0  # Do not penalize the intercept term
 
         # Step 4: Compute the model parameters
-        XTX = X.T @ X
-        XTX_penalty = XTX + penalty_matrix
-        XTX_penalty_inv = np.linalg.inv(XTX_penalty)
-        XTy = X.T @ y
-        thetas = XTX_penalty_inv @ XTy
+        # (XTX + XTX_penalty)inv + XTy
+        XTX = X.T @ X #Computes the Gram matrix
+        XTX_penalty = XTX + penalty_matrix #Adds L2 penalty as λI 
+        XTX_penalty_inv = np.linalg.inv(XTX_penalty)  #Inverts the regularized matrix
+        XTy = X.T @ y #Forms the cross-product
+        thetas = XTX_penalty_inv @ XTy #Multiplies to get coefficients 
 
         # Step 5: Extract theta_zero and theta
         self.theta_zero = thetas[0]
@@ -88,11 +90,11 @@ class RidgeRegressionLeastSquares(Model):
             X = (X - self.mean) / self.std
 
         # Step 2: Add intercept term to X
-        X = np.c_[np.ones(X.shape[0]), X]
+        X = np.c_[np.ones(X.shape[0]), X] #adds a new np array sixe of x.shape but with one 
 
         # Step 3: Compute the predicted y
-        thetas = np.r_[self.theta_zero, self.theta]
-        y_pred = X @ thetas
+        thetas = np.r_[self.theta_zero, self.theta] #concatenade zeros 
+        y_pred = X @ thetas # @ is basically the same as np.dot 
 
         return y_pred
 
@@ -114,8 +116,7 @@ class RidgeRegressionLeastSquares(Model):
         """
         if predictions is None:
             predictions = self._predict(dataset)
-
-        mse = np.mean((dataset.y - predictions) ** 2)
-        return mse
+            
+        return mse(dataset.y, predictions)
 
 

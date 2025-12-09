@@ -111,12 +111,12 @@ class KMeans(Transformer, Model):
         while not convergence and i < self.max_iter:
 
             # get closest centroid
-            new_labels = np.apply_along_axis(self._get_closest_centroid, axis=1, arr=dataset.X)
+            new_labels = np.apply_along_axis(self._get_closest_centroid, axis=1, arr=dataset.X)  # For each sample row, find closest centroid index
 
-            # compute the new centroids
+            # compute the new centroids as mean of all points
             centroids = []
             for j in range(self.k):
-                centroid = np.mean(dataset.X[new_labels == j], axis=0)
+                centroid = np.mean(dataset.X[new_labels == j], axis=0) 
                 centroids.append(centroid)
 
             self.centroids = np.array(centroids)

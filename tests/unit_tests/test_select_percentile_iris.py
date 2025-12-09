@@ -15,6 +15,7 @@ class TestSelectPercentile(TestCase):
         self.dataset = read_csv(filename=self.csv_file, features=True, label=True)
 
     def test_fit(self):
+        '''Sees if score are being computed i.e >0'''
         select_percentile = SelectPercentile(score_func = f_classification, percentile= 50)
 
         select_percentile.fit(self.dataset)
@@ -22,6 +23,7 @@ class TestSelectPercentile(TestCase):
         self.assertTrue(select_percentile.p.shape[0] > 0)
 
     def test_transform(self):
+        '''After transformation the dataset should be smaller than the orignal'''
         select_percentile = SelectPercentile(score_func = f_classification, percentile= 50)
         select_percentile.fit(self.dataset)
         new_dataset = select_percentile.transform(self.dataset)

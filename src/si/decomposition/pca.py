@@ -79,7 +79,7 @@ class PCA(Transformer):
         # Select the top n_components eigenvectors
         self.components = sorted_eigenvectors[:, :self.n_components].T
 
-        # 4. Infer the explained variance
+        # 4. Infer the explained variance (of one component?)
         total_variance = np.sum(eigenvalues)
         self.explained_variance = sorted_eigenvalues[:self.n_components] / total_variance
 

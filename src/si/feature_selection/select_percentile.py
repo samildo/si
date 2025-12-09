@@ -74,16 +74,18 @@ class SelectPercentile(Transformer):
         Dataset
             The transformed dataset with only the selected features.
         """
-        threshold = np.percentile(self.F, 100 - self.percentile)
+        threshold = np.percentile(self.F, 100 - self.percentile) # Find cutoff F-value at specified percentile
         
         mask = self.F >= threshold
 
-        if mask.sum() > int(len(self.F) * self.percentile / 100):
-            sorted_indices = np.argsort(-self.F)  
-            num_features = int(len(self.F) * self.percentile / 100)
-            selected_indices = sorted_indices[:num_features]
-            mask = np.zeros_like(self.F, dtype=bool)
-            mask[selected_indices] = True
+        if mask.sum() > int(len(self.F) * self.percentile / 100): #if it has too many features (ties)
+            sorted_indices = np.argsort(-self.F)  # Sort feature indices by descending F-value
+            num_features = int(len(self.F) * self.percentile / 100) # Exact number of features to select
+            selected_indices = sorted_indices[:num_features] # Pick top features by index
+            mask = np.zeros_like(self.F, dtype=bool)  # Create empty mask
+            mask[selected_indices] = True # Mark top indices as selected
 
-        selected_features = np.array(dataset.features)[mask]
+        selected_features = np.array(dataset.features)[mask]  # Extract feature names for selected features
+
+        # Return new Dataset with only selected features and original labels
         return Dataset(X=dataset.X[:, mask], y=dataset.y, features=list(selected_features), label=dataset.label)

@@ -51,9 +51,9 @@ class KNNRegressor(Model):
         X_test = dataset.X
 
         n_test = X_test.shape[0]
-        y_pred = np.zeros(n_test, dtype=float)
+        y_pred = np.zeros(n_test, dtype=float) #array of zeros same size as the sample size
 
-        for i in range(n_test):
+        for i in range(n_test): #apply along axis. 
             x = X_test[i]
 
             # 1. Distances from x to all training points (vectorized)

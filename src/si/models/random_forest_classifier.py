@@ -6,8 +6,6 @@ from si.base.model import Model
 from si.data.dataset import Dataset
 from si.metrics.accuracy import accuracy
 from si.models.decision_tree_classifier import DecisionTreeClassifier
-from si.statistics.impurity import gini_impurity, entropy_impurity
-
 
 Mode = Literal["gini", "entropy"]
 
@@ -117,14 +115,14 @@ class RandomForestClassifier(Model):
 
         # 1. Get predictions for each tree using respective features
         for i, (feature_indices, tree) in enumerate(self.trees):
-            X_sub = dataset.X[:, feature_indices]
-            tree_preds = tree._predict(Dataset(X=X_sub, y=None))
+            X_sub = dataset.X[:, feature_indices] #this is selecting the random features to use in one tree 
+            tree_preds = tree._predict(Dataset(X=X_sub, y=None)) #da classe decision tree classifier #usar o método público 
             # no astype(int) here
-            predictions[:, i] = tree_preds
+            predictions[:, i] = tree_preds  #all samples for tree i 
 
         # 2. Most common predicted class for each sample (mode over strings)
-        y_pred = np.empty(n_samples, dtype=object)
-        for i in range(n_samples):
+        y_pred = np.empty(n_samples, dtype=object) #empty 1D array for final predictions 
+        for i in range(n_samples): #apply along axis como no knn classifier 
             # count occurrences of each label
             values, counts = np.unique(predictions[i, :], return_counts=True)
             # pick the label with the highest count

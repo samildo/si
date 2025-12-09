@@ -207,7 +207,7 @@ class Dataset:
         self
             The updated Dataset object with rows containing null values removed.
         """
-        mask = ~np.any(np.isnan(self.X), axis=1)
+        mask = ~np.any(np.isnan(self.X), axis=1)    # if there is any nan then it is fale 
         self.X = self.X[mask]
         self.y = self.y[mask]
 
