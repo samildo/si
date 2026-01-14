@@ -141,3 +141,71 @@ class DenseLayer(Layer):
             The shape of the output of the layer.
         """
         return (self.n_units,) 
+
+#Ex 12
+class Dropout(Layer):
+    """
+    Dropout layer for neural networks to prevent overfitting.
+    """
+    def __init__(self, probability: float):
+        """
+        Initialize the Dropout layer.   
+
+        Parameters
+        ----------
+        probability : float
+            The dropout rate, between 0 and 1 (fraction of the input units to drop).
+        """
+        super().__init__()
+        if not (0 < probability < 1):
+            raise ValueError("Probability (dropout rate) must be between 0 and 1.")
+        else: self.probability = probability
+        
+        # Estimated parameters
+        self.mask = None
+        self.input = None
+        self.output = None
+
+    def forward_propagation(self, input: np.ndarray, training: bool = True) -> np.ndarray:
+        """
+        Perform forward propagation. 
+        Applies the mask and scales the input during training.
+        """
+        self.input = input
+        
+        if training:
+            # 1. Compute scaling factor to maintain the expected sum of inputs
+            # Scaling = 1 / (1 - p)
+            scaling_factor = 1 / (1 - self.probability)
+            
+            # 2. Compute the mask using a binomial distribution
+            #To keep units with probability (1 - p)
+            self.mask = np.random.binomial(1, 1 - self.probability, size=input.shape)
+            
+            # 3. Compute output: input * mask * scaling_factor
+            self.output = input * self.mask * scaling_factor
+            return self.output
+        
+        else:
+            # During inference, we do not drop units
+            return input
+
+    def backward_propagation(self, output_error: np.ndarray) -> np.ndarray:
+        """
+        Perform backward propagation.
+        Only the error from the units that were NOT dropped is passed back.
+        """
+        # Multiply the error by the same mask used in forward propagation
+        return output_error * self.mask
+
+    def output_shape(self) -> tuple:
+        """
+        Returns the input shape (Dropout does not change data dimensions).
+        """
+        return self.input_shape #no parenthesis because its stored as a tuple
+
+    def parameters(self) -> int:
+        """
+        Returns 0 (Dropout layers do not have learnable parameters).
+        """
+        return 0
